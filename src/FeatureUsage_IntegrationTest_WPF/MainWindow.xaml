@@ -1,0 +1,31 @@
+﻿<Window x:Class="FeatureUsage_IntegrationTest_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FeatureUsage_IntegrationTest_WPF"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="300" Width="500">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Edit" >
+                <MenuItem Header="Cut" Click="mnuCut_Click" />
+                <MenuItem Header="Copy" Click="mnuCopy_Click" />
+                <MenuItem Header="Paste" Click="mnuPaste_Click" />
+            </MenuItem>
+        </Menu>
+
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button Click="btnCancel_Click" 
+                    Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10">Cancel</Button>
+
+            <Button Click="btnSave_Click" 
+                    Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">Save</Button>
+        </Grid>
+    </DockPanel>
+</Window>
