@@ -23,24 +23,26 @@ namespace FeatureUsageTests
 
         public Task SendAllFeatureUsageDataAsync(IEnumerable<FeatureUsageRecord> records, CancellationToken cancellationToken)
         {
-            _entities.AddRange(records);
+            foreach(var record in records)
+            {
+                var existingFeatureForUser = _entities
+                    .FirstOrDefault(e => e.FeatureName == record.FeatureName
+                        && e.UserName == record.UserName);
+
+                if(existingFeatureForUser != null)
+                {
+                    existingFeatureForUser.UsageData = existingFeatureForUser
+                        .UsageData
+                        .Concat(record.UsageData)
+                        .ToArray();
+                }
+                else
+                {
+                    _entities.Add(record);
+                }
+            }
 
             return Task.CompletedTask;
         }
-
-        //public Task SendFeatureUsageUpdateAsync(string username, 
-        //    string featureName, 
-        //    IEnumerable<UsageData> usageData, 
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    _entities.Add(new FeatureUsageRecord
-        //    {
-        //        UserName = username,
-        //        FeatureName = featureName,
-        //        UsageData = usageData.ToArray()
-        //    });
-
-        //    return Task.CompletedTask;
-        //}
     }
 }

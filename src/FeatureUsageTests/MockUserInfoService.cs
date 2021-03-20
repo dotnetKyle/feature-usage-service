@@ -4,6 +4,12 @@ namespace FeatureUsageTests
 {
     class MockUserInfoService : IUserInfoService
     {
-        public string UserLogin => "TestUser";
+        string _currentUser = "TestUser";
+        public string UserLogin => _currentUser;
+
+        public void LoginUser(string username)
+        {
+            _currentUser = username;
+        }
     }
 }

@@ -6,16 +6,16 @@ namespace FeatureUsage.Entities
 {
     public class FeatureUsageRecord
     {
-        [BsonId]
+        [BsonId(Order = 3)]
         public ObjectId Id { get; set; }
 
-        [BsonElement("userName")]
+        [BsonElement("userName", Order = 0)]
         public string UserName { get; set; }
 
-        [BsonElement("featureName")]
+        [BsonElement("featureName", Order = 1)]
         public string FeatureName { get; set; }
 
-        [BsonElement("usageData")]
+        [BsonElement("usageData", Order = 2)]
         public UsageData[] UsageData { get; set; }
 
         public override string ToString()
