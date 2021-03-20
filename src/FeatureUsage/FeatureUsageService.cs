@@ -17,7 +17,7 @@ namespace FeatureUsage
         IFeatureUsageRepoAsync _featureUsageRepo;
         List<FeatureUsageDTO> _records { get; set; }
 
-        public int SaveTimerIntervalInMinutes = 1;
+        public int SaveTimerIntervalInMinutes = 10;
 
         public FeatureUsageService(IUserInfoService userInfoService, IFeatureUsageRepoAsync featureUsageRepo)
         {
