@@ -2,9 +2,7 @@
 A feature usage service that saves a description of feature usage per-user and also metadata about those features.
 
 ## Bulk Write Notes
-Bulk Write Async seems to start off a task without waiting for it to finish (even though you are awaiting that task).  
-When an app is closing and your initiating a bulk write, the app will not wait for the bulk write to finish and will abruptly close your mongo connection.
-There must be a way to stop this from happening and wait for the writes to finish, I haven't had time yet to look.
+Bulk Write Async doesn't seem to work correctly. Awaiting the task does not actually wait for it to finish. I recommend using BulkWrite instead since the thread will wait for it to finish.
 
 ## MongoDB Notes
 Based on how the repo stores feature usage data in MongoDB, here are some queries that will help calculate reports for usage data and benchmarks:
