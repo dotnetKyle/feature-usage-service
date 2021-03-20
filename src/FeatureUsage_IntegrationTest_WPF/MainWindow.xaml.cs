@@ -1,85 +1,99 @@
 ﻿using FeatureUsage;
 using FeatureUsage.DAO;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FeatureUsage_IntegrationTest_WPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         FeatureUsageService featureUsage;
+        Random rand;
 
         public MainWindow()
         {
             featureUsage = new FeatureUsageService(new UserInfoService(), new FeatureUsageRepoAsync(AppSettings.GetSettings()));
+            Features.Init(featureUsage);
+
             InitializeComponent();
+            
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
+
+            rand = new Random();
         }
 
         private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
             {
-                featureUsage.RecordUsage("MainWindow|Close");
+                Features.MainWindow.Close.RecordFeatureUse();
                 await featureUsage.ForceSendUsageToDatabaseAsync();
             }
             catch(Exception ex)
             {
-
+                Log.Error(ex);
             }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            featureUsage.RecordUsage("MainWindow|Load");
+            Features.MainWindow.Open.RecordFeatureUse();
         }
 
         private void mnuCut_Click(object sender, RoutedEventArgs e)
         {
-            featureUsage.RecordUsage("Edit Menu|Cut");
+            Features.MainWindow.EditMenu.Cut.RecordFeatureUse();
         }
         private void mnuCopy_Click(object sender, RoutedEventArgs e)
         {
-            featureUsage.RecordUsage("Edit Menu|Copy");
+            Features.MainWindow.EditMenu.Copy.RecordFeatureUse();
         }
         private void mnuPaste_Click(object sender, RoutedEventArgs e)
         {
-            featureUsage.RecordUsage("Edit Menu|Paste");
+            Features.MainWindow.EditMenu.Paste.RecordFeatureUse();
         }
 
         private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                featureUsage.RecordUsage("MainForm|Save");
+                Features.MainWindow.Save.RecordFeatureUse();
                 await featureUsage.ForceSendUsageToDatabaseAsync();
             }
             catch(Exception ex)
             {
-
+                Log.Error(ex);
             }
         }
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            featureUsage.RecordUsage("MainForm|Cancel");
+            Features.MainWindow.Cancel.RecordFeatureUse();
         }
 
-        
+        private async void btnLongRunningProcess_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // using the benchmark
+                using (Features.MainWindow.LongRunningService.BenchmarkFeatureUse()) 
+                {
+                    Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Running...");
+                    await Task.Delay(rand.Next(0, 500));
+                    Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Running..");
+                    await Task.Delay(rand.Next(0, 1000));
+                    Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Running.");
+                    await Task.Delay(rand.Next(0, 1000));
+                    Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Complete!");
+                    await Task.Delay(rand.Next(0, 500));
+                    Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Start Long Running Process");
+                } // <-- it will stop the time here
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
+        }
     }
 }
