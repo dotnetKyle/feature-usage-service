@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Features\Features.csproj" />
-    <ProjectReference Include="..\src\FeatureUsage\FeatureUsage.csproj" />
+    <ProjectReference Include="..\FeatureUsage\FeatureUsage.csproj" />
   </ItemGroup>
 
 </Project>
