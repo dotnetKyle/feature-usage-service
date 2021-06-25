@@ -78,20 +78,26 @@ namespace FeatureUsage
             }
         }
 
-        public void RecordUsage(string featureName)
+        public void RecordUsage(string featureName, DateTime? now = null)
         {
+            if (now.HasValue == false)
+                now = DateTime.UtcNow;
+
             var record = new FeatureUsageDTO
             {
-                DtgOfUsageUTC = DateTime.UtcNow, 
+                DtgOfUsageUTC = now.Value, 
                 FeatureName = featureName
             };
 
             _records.Add(record);
         }
 
-        public FeatureBenchmark Benchmark(string featureName)
+        public FeatureBenchmark Benchmark(string featureName, DateTime? now = null)
         {
-            return new FeatureBenchmark(featureName, (r) => recordBenchmark(r));
+            if (now.HasValue == false)
+                now = DateTime.UtcNow;
+
+            return new FeatureBenchmark(featureName, (r) => recordBenchmark(r), now);
         }
 
         public bool HasRecords

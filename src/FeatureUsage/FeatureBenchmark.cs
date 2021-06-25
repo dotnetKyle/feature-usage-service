@@ -8,15 +8,18 @@ namespace FeatureUsage
         Stopwatch stopWatch;
         Action<FeatureBenchmark> _recordBenchmarkAction;
 
-        internal FeatureBenchmark(string featureName, Action<FeatureBenchmark> recordBenchmark)
+        internal FeatureBenchmark(string featureName, Action<FeatureBenchmark> recordBenchmark, DateTime? now = null)
         {
+            if (now.HasValue == false)
+                now = DateTime.UtcNow;
+
             _recordBenchmarkAction = recordBenchmark;
             FeatureName = featureName;
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            DtgUtc = DateTime.UtcNow;
+            DtgUtc = now.Value;
         }
 
         public DateTime DtgUtc { get; private set; }

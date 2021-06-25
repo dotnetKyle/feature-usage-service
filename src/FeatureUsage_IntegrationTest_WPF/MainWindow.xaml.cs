@@ -1,8 +1,9 @@
-﻿using FeatureUsage;
-using FeatureUsage.DAO;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using Features;
+using FeatureUsage;
+using FeatureUsage.DAO;
 
 namespace FeatureUsage_IntegrationTest_WPF
 {
@@ -14,7 +15,7 @@ namespace FeatureUsage_IntegrationTest_WPF
         public MainWindow()
         {
             featureUsage = new FeatureUsageService(new UserInfoService(), new FeatureUsageRepoAsync(AppSettings.GetSettings()));
-            Features.Init(featureUsage);
+            FeaturesList.Init(featureUsage);
 
             InitializeComponent();
             
@@ -28,7 +29,7 @@ namespace FeatureUsage_IntegrationTest_WPF
         {
             try
             {
-                Features.MainWindow.Close.RecordFeatureUse();
+                FeaturesList.MainWindow.Close.RecordFeatureUse();
                 await featureUsage.ForceSendUsageToDatabaseAsync();
             }
             catch(Exception ex)
@@ -39,27 +40,27 @@ namespace FeatureUsage_IntegrationTest_WPF
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Features.MainWindow.Open.RecordFeatureUse();
+            FeaturesList.MainWindow.Open.RecordFeatureUse();
         }
 
         private void mnuCut_Click(object sender, RoutedEventArgs e)
         {
-            Features.MainWindow.EditMenu.Cut.RecordFeatureUse();
+            FeaturesList.MainWindow.EditMenu.Cut.RecordFeatureUse();
         }
         private void mnuCopy_Click(object sender, RoutedEventArgs e)
         {
-            Features.MainWindow.EditMenu.Copy.RecordFeatureUse();
+            FeaturesList.MainWindow.EditMenu.Copy.RecordFeatureUse();
         }
         private void mnuPaste_Click(object sender, RoutedEventArgs e)
         {
-            Features.MainWindow.EditMenu.Paste.RecordFeatureUse();
+            FeaturesList.MainWindow.EditMenu.Paste.RecordFeatureUse();
         }
 
         private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                Features.MainWindow.Save.RecordFeatureUse();
+                FeaturesList.MainWindow.Save.RecordFeatureUse();
                 await featureUsage.ForceSendUsageToDatabaseAsync();
             }
             catch(Exception ex)
@@ -69,7 +70,7 @@ namespace FeatureUsage_IntegrationTest_WPF
         }
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            Features.MainWindow.Cancel.RecordFeatureUse();
+            FeaturesList.MainWindow.Cancel.RecordFeatureUse();
         }
 
         private async void btnLongRunningProcess_Click(object sender, RoutedEventArgs e)
@@ -77,8 +78,10 @@ namespace FeatureUsage_IntegrationTest_WPF
             try
             {
                 // using the benchmark
-                using (Features.MainWindow.LongRunningService.BenchmarkFeatureUse()) 
+                using (FeaturesList.MainWindow.LongRunningService.BenchmarkFeatureUse()) 
                 {
+                    // use random numbers to imitate a long running service
+
                     Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Running...");
                     await Task.Delay(rand.Next(0, 500));
                     Dispatcher.Invoke(() => btnLongRunningProcess.Content = "Running..");
