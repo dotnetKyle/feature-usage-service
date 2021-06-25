@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using FeatureUsage.Entities;
 using MongoDB.Bson;
+using MongoDB.Driver.Linq;
+using MongoDB.Driver.Linq.Translators;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace FeatureUsage.DAO
 {
     public interface IFeatureUsageReportsRepoAsync
-    { 
-
+    {
+        Task CalculateEachFeatureCountAsync(DateTime startTime, DateTime stopTime, CancellationToken cancellationToken = default(CancellationToken));
     }
     public class FeatureUsageReportsRepoAsync : IFeatureUsageReportsRepoAsync
     {
@@ -37,26 +40,44 @@ namespace FeatureUsage.DAO
         /// <param name="startTime"></param>
         /// <param name="stopTime"></param>
         /// <param name="cancellationToken"></param>
-        //public async Task CalculateEachFeatureCountAsync(DateTime startTime, DateTime stopTime, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    var pipeline = new EmptyPipelineDefinition<FeatureUsageRecord>()
-        //        .Unwind(f => f.UsageData)
-        //        .Match(
-        //            Builders<BsonDocument>.Filter.And(
-        //                Builders<BsonDocument>.Filter.Gte("", startTime),
-        //                Builders<BsonDocument>.Filter.Lt("", stopTime)
-        //            )
-        //        )
-        //        .Group(
-        //        )
-        //        ;
+        public async Task CalculateEachFeatureCountAsync(DateTime startTime, DateTime stopTime, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            try
+            {
+                startTime = DateTime.UtcNow.AddHours(-1);
+                stopTime = DateTime.UtcNow.AddHours(1);
 
-        //    var cursor = await _collection.AggregateAsync(pipeline, null, cancellationToken);
+                var pipeline = new EmptyPipelineDefinition<FeatureUsageRecord>()
+                    .Unwind<FeatureUsageRecord, FeatureUsageRecord, UnwoundFeatureUsageRecord>(
+                        f => f.UsageData
+                    )
+                    .Match(
+                        f => 
+                               f.UsageData.UsageDtgUTC >= startTime 
+                            && f.UsageData.UsageDtgUTC < stopTime
+                    )
+                    .Group(e => e.FeatureName, 
+                        e => new FeatureTotalCount
+                        { 
+                            FeatureName = e.Key,
+                            UsageCount = e.Count()
+                        }
+                    )
+                    .Sort(
+                        new SortDefinitionBuilder<FeatureTotalCount>()
+                            .Descending(e => e.UsageCount)
+                    );
 
-        //    var list = await cursor.ToListAsync(cancellationToken);
+                var cursor = await _collection.AggregateAsync(pipeline, null, cancellationToken);
 
-
-        //}
+                var list = await cursor.ToListAsync(cancellationToken);
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error:");
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
 
         /*
             Report to calculate the number of times each feature has been used.
@@ -125,4 +146,35 @@ namespace FeatureUsage.DAO
             ])
          */
     }
+
+    public class UnwoundFeatureUsageRecord
+    {
+        [BsonId(Order = 3)]
+        public ObjectId Id { get; set; }
+
+        [BsonElement("userName")]
+        public string UserName { get; set; }
+
+        [BsonElement("featureName")]
+        public string FeatureName { get; set; }
+
+        [BsonElement("usageData")]
+        public UsageData UsageData { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FeatureName} {UserName} UTC:[{UsageData.UsageDtgUTC}]";
+        }
+    }
+    public class FeatureTotalCount
+    {
+        public string FeatureName { get; set; }
+        public int UsageCount { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FeatureName} ({UsageCount})";
+        }
+    }
+
 }

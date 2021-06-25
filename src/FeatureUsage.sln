@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureSeedDataCreator", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Features", "..\Features\Features.csproj", "{B9D4DF79-C83A-4F66-8750-41E3C9CB029A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureReportTests", "..\FeatureReportTests\FeatureReportTests.csproj", "{38952A30-16CA-4F26-9D41-3C0B7651300D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{B9D4DF79-C83A-4F66-8750-41E3C9CB029A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9D4DF79-C83A-4F66-8750-41E3C9CB029A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9D4DF79-C83A-4F66-8750-41E3C9CB029A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38952A30-16CA-4F26-9D41-3C0B7651300D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38952A30-16CA-4F26-9D41-3C0B7651300D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38952A30-16CA-4F26-9D41-3C0B7651300D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38952A30-16CA-4F26-9D41-3C0B7651300D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
